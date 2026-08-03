@@ -5,16 +5,19 @@ import argparse
 import math
 import random
 import warnings
-import tqdm
-import numpy as np
-import pandas as pd
-from sklearn import preprocessing
 
+# 先导入 PyTorch，避免 Windows DLL 加载冲突
 import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.utils as utils
 
+import tqdm
+import numpy as np
+import pandas as pd
+from sklearn import preprocessing
+
+# 导入 STGCN 项目自己的代码
 from script import dataloader, utility, earlystopping, opt
 from model import models
 
