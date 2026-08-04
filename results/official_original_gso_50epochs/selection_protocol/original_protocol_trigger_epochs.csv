@@ -1,0 +1,29 @@
+epoch,improved_metric_count,improved_metrics,checkpoint_exists
+1,9,15_min_MAPE; 15_min_MAE; 15_min_RMSE; 30_min_MAPE; 30_min_MAE; 30_min_RMSE; 45_min_MAPE; 45_min_MAE; 45_min_RMSE,False
+3,4,15_min_MAPE; 15_min_MAE; 15_min_RMSE; 30_min_MAPE,False
+4,9,15_min_MAPE; 15_min_MAE; 15_min_RMSE; 30_min_MAPE; 30_min_MAE; 30_min_RMSE; 45_min_MAPE; 45_min_MAE; 45_min_RMSE,False
+6,4,15_min_MAPE; 15_min_RMSE; 30_min_MAPE; 45_min_MAPE,False
+7,8,15_min_MAE; 15_min_RMSE; 30_min_MAPE; 30_min_MAE; 30_min_RMSE; 45_min_MAPE; 45_min_MAE; 45_min_RMSE,False
+11,9,15_min_MAPE; 15_min_MAE; 15_min_RMSE; 30_min_MAPE; 30_min_MAE; 30_min_RMSE; 45_min_MAPE; 45_min_MAE; 45_min_RMSE,False
+12,3,15_min_MAPE; 30_min_MAPE; 45_min_MAPE,False
+16,2,15_min_MAE; 15_min_RMSE,False
+17,7,15_min_MAE; 15_min_RMSE; 30_min_MAE; 30_min_RMSE; 45_min_MAPE; 45_min_MAE; 45_min_RMSE,False
+19,7,15_min_MAPE; 15_min_MAE; 15_min_RMSE; 30_min_MAE; 30_min_RMSE; 45_min_MAE; 45_min_RMSE,False
+20,3,15_min_MAPE; 30_min_MAPE; 45_min_MAPE,True
+21,9,15_min_MAPE; 15_min_MAE; 15_min_RMSE; 30_min_MAPE; 30_min_MAE; 30_min_RMSE; 45_min_MAPE; 45_min_MAE; 45_min_RMSE,False
+22,3,15_min_MAPE; 30_min_MAPE; 45_min_MAPE,False
+23,1,45_min_MAPE,False
+25,2,30_min_MAPE; 45_min_MAPE,False
+26,7,15_min_MAPE; 15_min_MAE; 15_min_RMSE; 30_min_MAPE; 30_min_RMSE; 45_min_MAPE; 45_min_RMSE,False
+28,2,30_min_MAPE; 45_min_MAPE,False
+29,4,15_min_MAPE; 30_min_MAPE; 45_min_MAPE; 45_min_RMSE,False
+31,7,15_min_MAPE; 30_min_MAPE; 30_min_MAE; 30_min_RMSE; 45_min_MAPE; 45_min_MAE; 45_min_RMSE,False
+32,5,15_min_MAE; 30_min_MAE; 30_min_RMSE; 45_min_MAE; 45_min_RMSE,False
+34,6,15_min_MAE; 15_min_RMSE; 30_min_MAE; 30_min_RMSE; 45_min_MAE; 45_min_RMSE,False
+38,1,15_min_RMSE,False
+39,3,15_min_MAE; 30_min_MAPE; 45_min_MAPE,False
+41,3,15_min_MAPE; 30_min_MAPE; 45_min_MAPE,False
+43,3,15_min_MAE; 30_min_MAE; 45_min_MAE,False
+45,4,30_min_MAE; 30_min_RMSE; 45_min_MAE; 45_min_RMSE,False
+46,5,15_min_MAE; 15_min_RMSE; 30_min_MAE; 30_min_RMSE; 45_min_MAE,False
+50,6,15_min_MAE; 15_min_RMSE; 30_min_MAE; 30_min_RMSE; 45_min_MAE; 45_min_RMSE,True
