@@ -1,0 +1,40 @@
+STGCN Paper-Aligned Reproduction Summary
+=======================================================
+
+Dataset: PeMSD7(M)
+Historical window: 12 x 5 minutes = 60 minutes
+Forecast horizons: 15, 30 and 45 minutes
+Training epochs: 50
+
+Paper comparison:
+
+15-minute forecast
+  MAPE: paper=5.260%, reproduction=5.220%, difference=-0.040 percentage points
+  MAE:  paper=2.250, reproduction=2.259, difference=+0.009
+  RMSE: paper=4.040, reproduction=4.116, difference=+0.076
+
+30-minute forecast
+  MAPE: paper=7.330%, reproduction=7.329%, difference=-0.001 percentage points
+  MAE:  paper=3.030, reproduction=3.093, difference=+0.063
+  RMSE: paper=5.700, reproduction=5.848, difference=+0.148
+
+45-minute forecast
+  MAPE: paper=8.690%, reproduction=8.794%, difference=+0.104 percentage points
+  MAE:  paper=3.570, reproduction=3.695, difference=+0.125
+  RMSE: paper=6.770, reproduction=7.001, difference=+0.231
+
+Best validation epochs:
+  15-minute MAPE: epoch 38, value=5.235459
+  15-minute MAE: epoch 26, value=2.216026
+  15-minute RMSE: epoch 26, value=4.049308
+  30-minute MAPE: epoch 50, value=7.340946
+  30-minute MAE: epoch 26, value=2.990911
+  30-minute RMSE: epoch 45, value=5.699234
+  45-minute MAPE: epoch 38, value=8.863739
+  45-minute MAE: epoch 45, value=3.520237
+  45-minute RMSE: epoch 45, value=6.718541
+
+Interpretation:
+The PyTorch reproduction closely matches the reported STGCN(Cheb) results.
+Errors increase with forecast horizon because predictions are generated autoregressively.
+Different validation metrics reach their minimum at different epochs, so epoch 50 is not necessarily the best epoch for every individual metric.
