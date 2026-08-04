@@ -1,0 +1,18 @@
+Original STGCN Validation-Selection Protocol Audit
+==============================================================
+
+Run name: official_original_gso_seed123_protocol
+Final training epoch: 50
+Number of trigger epochs: 31
+Last trigger epoch: 49
+Last-trigger checkpoint exists: True
+Final checkpoint exists: True
+
+Original repository behavior:
+1. Validation metrics are tracked independently.
+2. If any validation metric improves, the complete test metric vector is recomputed and replaces the previous test vector.
+3. Therefore, the final validation-minimum vector can combine values from different epochs.
+4. The final reported test vector corresponds to the last epoch that improved at least one validation metric, not necessarily one checkpoint minimizing all metrics.
+
+Conclusion:
+The last trigger occurs before the final epoch, and its checkpoint exists. Evaluate that checkpoint to reproduce the original tracking logic.

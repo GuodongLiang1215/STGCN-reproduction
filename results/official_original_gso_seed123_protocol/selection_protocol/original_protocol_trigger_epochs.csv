@@ -1,0 +1,32 @@
+epoch,improved_metric_count,improved_metrics,checkpoint_exists
+1,9,15_min_MAPE; 15_min_MAE; 15_min_RMSE; 30_min_MAPE; 30_min_MAE; 30_min_RMSE; 45_min_MAPE; 45_min_MAE; 45_min_RMSE,True
+2,9,15_min_MAPE; 15_min_MAE; 15_min_RMSE; 30_min_MAPE; 30_min_MAE; 30_min_RMSE; 45_min_MAPE; 45_min_MAE; 45_min_RMSE,True
+4,5,15_min_MAPE; 15_min_MAE; 15_min_RMSE; 30_min_MAPE; 45_min_MAPE,True
+5,6,15_min_MAE; 15_min_RMSE; 30_min_MAE; 30_min_RMSE; 45_min_MAE; 45_min_RMSE,True
+6,1,45_min_MAE,True
+7,6,15_min_MAPE; 15_min_MAE; 15_min_RMSE; 30_min_MAPE; 30_min_RMSE; 45_min_MAPE,True
+9,2,30_min_RMSE; 45_min_RMSE,True
+10,9,15_min_MAPE; 15_min_MAE; 15_min_RMSE; 30_min_MAPE; 30_min_MAE; 30_min_RMSE; 45_min_MAPE; 45_min_MAE; 45_min_RMSE,True
+14,2,15_min_MAPE; 45_min_MAPE,True
+16,6,15_min_MAPE; 15_min_RMSE; 30_min_MAPE; 30_min_RMSE; 45_min_MAPE; 45_min_RMSE,True
+17,8,15_min_MAPE; 15_min_MAE; 15_min_RMSE; 30_min_MAPE; 30_min_MAE; 30_min_RMSE; 45_min_MAE; 45_min_RMSE,True
+18,2,15_min_MAE; 15_min_RMSE,True
+19,3,15_min_RMSE; 30_min_MAPE; 45_min_MAPE,True
+20,1,15_min_MAPE,True
+21,4,15_min_MAPE; 15_min_RMSE; 30_min_MAPE; 45_min_MAPE,True
+23,8,15_min_MAPE; 15_min_MAE; 15_min_RMSE; 30_min_MAPE; 30_min_MAE; 30_min_RMSE; 45_min_MAPE; 45_min_RMSE,True
+26,3,15_min_MAPE; 30_min_MAPE; 45_min_MAPE,True
+27,3,30_min_MAE; 45_min_MAE; 45_min_RMSE,True
+28,7,15_min_MAE; 15_min_RMSE; 30_min_MAPE; 30_min_MAE; 30_min_RMSE; 45_min_MAPE; 45_min_MAE,True
+29,6,15_min_MAE; 15_min_RMSE; 30_min_MAE; 30_min_RMSE; 45_min_MAE; 45_min_RMSE,True
+31,1,45_min_MAE,True
+35,3,15_min_MAPE; 30_min_MAPE; 45_min_MAPE,True
+36,2,30_min_MAPE; 45_min_MAPE,True
+37,5,15_min_MAPE; 15_min_MAE; 15_min_RMSE; 30_min_MAPE; 45_min_MAPE,True
+38,4,15_min_MAE; 15_min_RMSE; 30_min_MAE; 30_min_RMSE,True
+39,3,15_min_RMSE; 30_min_RMSE; 45_min_RMSE,True
+40,2,45_min_MAPE; 45_min_RMSE,True
+42,3,30_min_MAE; 45_min_MAE; 45_min_RMSE,True
+46,6,15_min_MAE; 15_min_RMSE; 30_min_MAE; 30_min_RMSE; 45_min_MAE; 45_min_RMSE,True
+47,3,15_min_MAPE; 30_min_MAPE; 45_min_MAPE,True
+49,1,45_min_MAPE,True
