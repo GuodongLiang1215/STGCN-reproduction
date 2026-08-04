@@ -7,6 +7,14 @@
 # PyTorch models
 *.pt
 *.pth
+checkpoints/
+
+# Local smoke-test outputs
+results/smoke_test/
+results/graph_current_smoke/
+results/graph_official_smoke/
+results/official_current_gso_smoke/
+results/official_original_gso_smoke/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

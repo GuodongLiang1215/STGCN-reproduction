@@ -95,13 +95,9 @@ def calc_chebynet_gso(gso):
 
 
 def calc_original_stgcn_gso(adj):
-    """
-    按原始 TensorFlow STGCN 的 scaled_laplacian()
-    构造缩放归一化 Laplacian。
+    """Reproduce the TensorFlow STGCN `scaled_laplacian` construction.
 
-    返回：
-        gso: 稀疏矩阵，形状 [节点数, 节点数]
-        lambda_max: Laplacian 的最大特征值
+    Returns the sparse `[node, node]` GSO and the largest Laplacian eigenvalue.
     """
 
     if sp.issparse(adj):
@@ -109,63 +105,37 @@ def calc_original_stgcn_gso(adj):
     else:
         adjacency = np.asarray(adj)
 
-    adjacency = np.asarray(
-        adjacency,
-        dtype=np.float64,
-    )
+    adjacency = np.asarray(adjacency, dtype=np.float64)
 
     n_vertex = adjacency.shape[0]
 
-    if adjacency.shape != (
-        n_vertex,
-        n_vertex,
-    ):
+    if adjacency.shape != (n_vertex, n_vertex):
         raise ValueError("The adjacency matrix must be square.")
 
-    # 每个节点的度数
-    degree = np.sum(
-        adjacency,
-        axis=1,
-    )
+    # Isolated nodes require explicit handling in the reference formulation.
+    degree = np.sum(adjacency, axis=1)
 
-    # 原作者的 Laplacian：
-    # 非对角线为 -W
-    # 对角线为节点度数
+    # The reference Laplacian uses -W off diagonal and degree on diagonal.
     laplacian = -adjacency.copy()
 
     laplacian[np.diag_indices_from(laplacian)] = degree
 
-    # 与原 TensorFlow 代码保持一致
+    # Normalize only pairs whose endpoint degrees are non-zero.
     for row in range(n_vertex):
         for column in range(n_vertex):
             if degree[row] > 0 and degree[column] > 0:
-                laplacian[
-                    row,
-                    column,
-                ] = laplacian[
-                    row,
-                    column,
-                ] / np.sqrt(degree[row] * degree[column])
+                laplacian[row, column] = laplacian[row, column] / np.sqrt(
+                    degree[row] * degree[column]
+                )
 
-    lambda_max = float(
-        eigs(
-            sp.csc_matrix(laplacian),
-            k=1,
-            which="LR",
-        )[
-            0
-        ][0].real
-    )
+    lambda_max = float(eigs(sp.csc_matrix(laplacian), k=1, which="LR")[0][0].real)
 
     scaled_laplacian = 2.0 * laplacian / lambda_max - np.identity(
-        n_vertex,
-        dtype=np.float64,
+        n_vertex, dtype=np.float64
     )
 
-    return (
-        sp.csc_matrix(scaled_laplacian),
-        lambda_max,
-    )
+    return (sp.csc_matrix(scaled_laplacian), lambda_max)
+
 
 def cnv_sparse_mat_to_coo_tensor(sp_mat, device):
     # convert a compressed sparse row (csr) or compressed sparse column (csc) matrix to a hybrid sparse coo tensor

@@ -6,7 +6,7 @@ import math
 import random
 import warnings
 
-# 先导入 PyTorch，避免 Windows DLL 加载冲突
+# Import PyTorch before NumPy on Windows to avoid DLL load-order issues.
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -17,7 +17,6 @@ import numpy as np
 import pandas as pd
 from sklearn import preprocessing
 
-# 导入 STGCN 项目自己的代码
 from script import dataloader, utility, earlystopping, opt
 from model import models
 
@@ -144,20 +143,11 @@ def get_parameters():
 
 
 def data_preparate(args, device):
-    """
-    使用论文对齐的数据处理方式准备训练、验证和测试集。
-    """
-
-    # =====================================================
-    # 1. 准备图结构
-    # =====================================================
+    """Prepare the graph and the audited train/validation/test split."""
 
     adj, n_vertex = dataloader.load_adj(args.dataset)
 
-    gso = utility.calc_gso(
-        adj,
-        args.gso_type,
-    )
+    gso = utility.calc_gso(adj, args.gso_type)
 
     if args.graph_conv_type == "cheb_graph_conv":
         gso = utility.calc_chebynet_gso(gso)
@@ -167,69 +157,36 @@ def data_preparate(args, device):
 
     args.gso = torch.from_numpy(gso).to(device)
 
-    # =====================================================
-    # 2. 使用论文式数据处理
-    # =====================================================
-
-    (
-        zscore,
-        x_train,
-        y_train,
-        x_val,
-        y_val,
-        x_test,
-        y_test,
-    ) = dataloader.prepare_paper_data(
-        dataset_name=args.dataset,
-        n_his=args.n_his,
-        n_pred=args.n_pred,
-        device=device,
-        n_train_days=34,
-        n_val_days=5,
-        n_test_days=5,
-        day_slot=288,
+    (zscore, x_train, y_train, x_val, y_val, x_test, y_test) = (
+        dataloader.prepare_paper_data(
+            dataset_name=args.dataset,
+            n_his=args.n_his,
+            n_pred=args.n_pred,
+            device=device,
+            n_train_days=34,
+            n_val_days=5,
+            n_test_days=5,
+            day_slot=288,
+        )
     )
 
-    # =====================================================
-    # 3. 建立 PyTorch DataLoader
-    # =====================================================
-
-    train_data = utils.data.TensorDataset(
-        x_train,
-        y_train,
-    )
+    train_data = utils.data.TensorDataset(x_train, y_train)
 
     train_iter = utils.data.DataLoader(
-        dataset=train_data,
-        batch_size=args.batch_size,
-        shuffle=False,
+        dataset=train_data, batch_size=args.batch_size, shuffle=False
     )
 
-    val_data = utils.data.TensorDataset(
-        x_val,
-        y_val,
-    )
+    val_data = utils.data.TensorDataset(x_val, y_val)
 
     val_iter = utils.data.DataLoader(
-        dataset=val_data,
-        batch_size=args.batch_size,
-        shuffle=False,
+        dataset=val_data, batch_size=args.batch_size, shuffle=False
     )
 
-    test_data = utils.data.TensorDataset(
-        x_test,
-        y_test,
-    )
+    test_data = utils.data.TensorDataset(x_test, y_test)
 
     test_iter = utils.data.DataLoader(
-        dataset=test_data,
-        batch_size=args.batch_size,
-        shuffle=False,
+        dataset=test_data, batch_size=args.batch_size, shuffle=False
     )
-
-    # =====================================================
-    # 4. 显示数据处理结果
-    # =====================================================
 
     print("\nPaper-aligned data preparation:")
 
@@ -237,31 +194,13 @@ def data_preparate(args, device):
 
     print(f"Global std:  {zscore.std:.6f}")
 
-    print(
-        "Train X / y:",
-        tuple(x_train.shape),
-        tuple(y_train.shape),
-    )
+    print("Train X / y:", tuple(x_train.shape), tuple(y_train.shape))
 
-    print(
-        "Val X / y:",
-        tuple(x_val.shape),
-        tuple(y_val.shape),
-    )
+    print("Val X / y:", tuple(x_val.shape), tuple(y_val.shape))
 
-    print(
-        "Test X / y:",
-        tuple(x_test.shape),
-        tuple(y_test.shape),
-    )
+    print("Test X / y:", tuple(x_test.shape), tuple(y_test.shape))
 
-    return (
-        n_vertex,
-        zscore,
-        train_iter,
-        val_iter,
-        test_iter,
-    )
+    return (n_vertex, zscore, train_iter, val_iter, test_iter)
 
 
 def prepare_model(args, blocks, n_vertex):
