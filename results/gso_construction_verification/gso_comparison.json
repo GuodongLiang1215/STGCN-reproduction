@@ -1,0 +1,58 @@
+{
+  "official_adjacency_path": "D:\\spatiotemporal-ml\\STGCN_reproduction\\data\\pemsd7-m\\adj_official_stgcn.npz",
+  "adjacency_nonzero_count": 1664,
+  "isolated_node_count": 3,
+  "isolated_node_indices": [
+    13,
+    135,
+    226
+  ],
+  "original_largest_eigenvalue": 2.0000000000000018,
+  "current_utility_warnings": [
+    "RuntimeWarning: divide by zero encountered in power"
+  ],
+  "current_utility_gso": {
+    "shape": [
+      228,
+      228
+    ],
+    "minimum": -1.0000001271381038,
+    "maximum": 7.928813383628608e-09,
+    "mean": -0.004265070487521811,
+    "nonzero_count": 1892,
+    "diagonal_min": 7.928813383628608e-09,
+    "diagonal_max": 7.928813383628608e-09,
+    "symmetry_max_abs_difference": 2.980232266525107e-08,
+    "finite": true
+  },
+  "original_tensorflow_gso": {
+    "shape": [
+      228,
+      228
+    ],
+    "minimum": -1.0,
+    "maximum": -0.0,
+    "mean": -0.004322780558591219,
+    "nonzero_count": 1892,
+    "diagonal_min": -1.0,
+    "diagonal_max": -8.881784197001252e-16,
+    "symmetry_max_abs_difference": 0.0,
+    "finite": true
+  },
+  "isolated_node_diagonal": {
+    "current_unique_values": [
+      7.929e-09
+    ],
+    "original_unique_values": [
+      -1.0
+    ]
+  },
+  "current_vs_original": {
+    "max_abs_difference": 1.0000000079288134,
+    "mean_abs_difference": 5.7710305233046535e-05,
+    "rmse_difference": 0.007596714128517717,
+    "exact_equal": false,
+    "allclose_atol_1e-8": false,
+    "allclose_atol_1e-6": false
+  }
+}

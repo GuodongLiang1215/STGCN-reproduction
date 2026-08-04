@@ -1,0 +1,10 @@
+minutes,metric,best_configuration,best_value
+15,MAPE_percent,official graph + current GSO,5.210203179266791
+15,MAE,official graph + original GSO,2.227263814562058
+15,RMSE,official graph + original GSO,4.04859167967504
+30,MAPE_percent,official graph + current GSO,7.298545128202276
+30,MAE,official graph + original GSO,2.999823258553041
+30,RMSE,official graph + original GSO,5.676036678538367
+45,MAPE_percent,official graph + current GSO,8.773869941233963
+45,MAE,official graph + original GSO,3.554606778248969
+45,RMSE,official graph + original GSO,6.747063419206045

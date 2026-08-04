@@ -1,0 +1,4 @@
+comparison,same_shape,first_shape,second_shape,max_abs_difference,mean_abs_difference,rmse_difference,allclose_atol_1e-8,allclose_atol_1e-6,allclose_atol_1e-5,exact_equal
+current_adj_npz vs official_source_csv,True,"(228, 228)","(228, 228)",45229.84,16862.60802711811,18953.524416300635,False,False,False,False
+current_adj_npz vs official_after_original_weight_matrix,True,"(228, 228)","(228, 228)",1.0,0.14159919886901295,0.27643739464956085,False,False,False,False
+current_adj_npz vs official_after_original_weight_matrix_symmetrized,True,"(228, 228)","(228, 228)",1.0,0.14159919886901295,0.27643739464956085,False,False,False,False

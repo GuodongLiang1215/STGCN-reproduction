@@ -1,0 +1,5 @@
+name,rows,columns,minimum,maximum,mean,nonzero_count,diagonal_max_abs,symmetry_max_abs_difference,canonical_sha256
+current_adj_npz,228,228,0.0,1.0,0.16676551039318513,19118,1.0,0.0,dcb73cae2899a36d5586c4d2cbba4825911a56bff1c0e1a39de93ef65de9ba03
+official_source_csv,228,228,0.0,45229.84,16862.76471260388,51722,0.0,0.0,58e20061d3c3b0486a3733c30fb97ebebf1efb484ad5f4594788b2de6e8acd35
+official_after_original_weight_matrix,228,228,0.0,1.0,0.025166311524172143,1664,0.0,0.0,d8cd29639a4ad20fb282fb75792ccdbfba2ae32c3cae7b893f2555008cf3030e
+official_after_original_weight_matrix_symmetrized,228,228,0.0,1.0,0.025166311524172143,1664,0.0,0.0,d8cd29639a4ad20fb282fb75792ccdbfba2ae32c3cae7b893f2555008cf3030e

@@ -1,0 +1,81 @@
+PeMSD7(M) Graph Matrix Verification
+============================================================
+
+Current NPZ: D:\spatiotemporal-ml\STGCN_reproduction\data\pemsd7-m\adj.npz
+Current NPZ SHA256: 66382967506019a66cb15b03851981514786750881d92f5b00531b848cbaf4af
+
+Official CSV: D:\spatiotemporal-ml\STGCN_reproduction\data\pemsd7-official\PeMSD7_W_228.csv
+Official CSV SHA256: c558c602b7937fb3ecb3835938fe8f61a34efa4c51e0ae3f61ed93ecc680060e
+
+Matrix statistics:
+
+[current_adj_npz]
+shape = (228, 228)
+min = 0
+max = 1
+mean = 0.166765510393
+nonzero_count = 19118
+diagonal_max_abs = 1
+symmetry_max_abs_difference = 0
+canonical_sha256 = dcb73cae2899a36d5586c4d2cbba4825911a56bff1c0e1a39de93ef65de9ba03
+
+[official_source_csv]
+shape = (228, 228)
+min = 0
+max = 45229.84
+mean = 16862.7647126
+nonzero_count = 51722
+diagonal_max_abs = 0
+symmetry_max_abs_difference = 0
+canonical_sha256 = 58e20061d3c3b0486a3733c30fb97ebebf1efb484ad5f4594788b2de6e8acd35
+
+[official_after_original_weight_matrix]
+shape = (228, 228)
+min = 0
+max = 1
+mean = 0.0251663115242
+nonzero_count = 1664
+diagonal_max_abs = 0
+symmetry_max_abs_difference = 0
+canonical_sha256 = d8cd29639a4ad20fb282fb75792ccdbfba2ae32c3cae7b893f2555008cf3030e
+
+[official_after_original_weight_matrix_symmetrized]
+shape = (228, 228)
+min = 0
+max = 1
+mean = 0.0251663115242
+nonzero_count = 1664
+diagonal_max_abs = 0
+symmetry_max_abs_difference = 0
+canonical_sha256 = d8cd29639a4ad20fb282fb75792ccdbfba2ae32c3cae7b893f2555008cf3030e
+
+Comparisons:
+
+[current_adj_npz vs official_source_csv]
+max_abs_difference = 45229.84
+mean_abs_difference = 16862.60802711811
+rmse_difference = 18953.524416300635
+exact_equal = False
+allclose_atol_1e-8 = False
+allclose_atol_1e-6 = False
+allclose_atol_1e-5 = False
+
+[current_adj_npz vs official_after_original_weight_matrix]
+max_abs_difference = 1.0
+mean_abs_difference = 0.14159919886901295
+rmse_difference = 0.27643739464956085
+exact_equal = False
+allclose_atol_1e-8 = False
+allclose_atol_1e-6 = False
+allclose_atol_1e-5 = False
+
+[current_adj_npz vs official_after_original_weight_matrix_symmetrized]
+max_abs_difference = 1.0
+mean_abs_difference = 0.14159919886901295
+rmse_difference = 0.27643739464956085
+exact_equal = False
+allclose_atol_1e-8 = False
+allclose_atol_1e-6 = False
+allclose_atol_1e-5 = False
+
+CONCLUSION: The current adj.npz does not match the official graph matrix under the tested preprocessing paths. This is a plausible source of the remaining reproduction gap.

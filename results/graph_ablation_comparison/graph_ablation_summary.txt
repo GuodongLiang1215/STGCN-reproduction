@@ -1,0 +1,71 @@
+STGCN Graph-Pipeline Ablation Summary
+============================================================
+
+Experiment A:
+  current graph + current PyTorch GSO
+
+Experiment B:
+  official STGCN graph + current PyTorch GSO
+
+Experiment C:
+  official STGCN graph + original TensorFlow GSO
+
+Interpretation of controlled changes:
+  B - A isolates the adjacency-matrix effect.
+  C - B isolates the GSO-construction effect.
+
+15-minute horizon
+  MAPE_percent:
+    graph effect (B-A) = -0.009305
+    GSO effect (C-B) = +0.021547
+    total effect (C-A) = +0.012241
+  MAE:
+    graph effect (B-A) = -0.031986
+    GSO effect (C-B) = -0.000064
+    total effect (C-A) = -0.032050
+  RMSE:
+    graph effect (B-A) = -0.067229
+    GSO effect (C-B) = -0.000446
+    total effect (C-A) = -0.067675
+
+30-minute horizon
+  MAPE_percent:
+    graph effect (B-A) = -0.030743
+    GSO effect (C-B) = +0.028108
+    total effect (C-A) = -0.002635
+  MAE:
+    graph effect (B-A) = -0.090304
+    GSO effect (C-B) = -0.003182
+    total effect (C-A) = -0.093486
+  RMSE:
+    graph effect (B-A) = -0.171276
+    GSO effect (C-B) = -0.000872
+    total effect (C-A) = -0.172147
+
+45-minute horizon
+  MAPE_percent:
+    graph effect (B-A) = -0.020588
+    GSO effect (C-B) = +0.050151
+    total effect (C-A) = +0.029563
+  MAE:
+    graph effect (B-A) = -0.134287
+    GSO effect (C-B) = -0.006014
+    total effect (C-A) = -0.140301
+  RMSE:
+    graph effect (B-A) = -0.252888
+    GSO effect (C-B) = -0.001324
+    total effect (C-A) = -0.254211
+
+Best configuration for each metric:
+  15-minute MAPE_percent: official graph + current GSO (5.210203)
+  15-minute MAE: official graph + original GSO (2.227264)
+  15-minute RMSE: official graph + original GSO (4.048592)
+  30-minute MAPE_percent: official graph + current GSO (7.298545)
+  30-minute MAE: official graph + original GSO (2.999823)
+  30-minute RMSE: official graph + original GSO (5.676037)
+  45-minute MAPE_percent: official graph + current GSO (8.773870)
+  45-minute MAE: official graph + original GSO (3.554607)
+  45-minute RMSE: official graph + original GSO (6.747063)
+
+Important caution:
+These are single-seed, epoch-50 results. Small differences between B and C should not be interpreted as statistically meaningful until multi-seed experiments are completed.

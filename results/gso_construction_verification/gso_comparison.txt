@@ -1,0 +1,32 @@
+Official PeMSD7(M) GSO Construction Verification
+==============================================================
+
+Adjacency non-zero count: 1664
+Isolated node count: 3
+Isolated node indices: [13, 135, 226]
+
+Original TensorFlow construction:
+  largest eigenvalue: 2
+  GSO min: -1
+  GSO max: -0
+
+Current PyTorch utility construction:
+  GSO min: -1.00000012714
+  GSO max: 7.92881338363e-09
+
+Isolated-node diagonal values:
+  current utility: [7.929e-09]
+  original TensorFlow: [-1.0]
+
+Current vs original:
+  max abs difference: 1.00000000793
+  mean abs difference: 5.7710305233e-05
+  RMSE difference: 0.00759671412852
+  exact equal: False
+  allclose atol=1e-8: False
+  allclose atol=1e-6: False
+
+Captured warnings:
+  - RuntimeWarning: divide by zero encountered in power
+
+CONCLUSION: The current utility GSO does not match the original TensorFlow scaled Laplacian. A separate original-GSO option is required before claiming full graph-pipeline alignment.
