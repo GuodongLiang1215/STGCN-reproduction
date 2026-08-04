@@ -1,0 +1,26 @@
+{
+  "run_name": "official_original_gso_seed2026_protocol",
+  "selected_epoch": 48,
+  "checkpoint_path": "D:\\spatiotemporal-ml\\STGCN_reproduction\\checkpoints\\official_original_gso_seed2026_protocol\\paper_stgcn_epoch_048.pt",
+  "checkpoint_epoch": 48,
+  "dataset": "pemsd7-m",
+  "graph_source": "official",
+  "gso_source": "original",
+  "test_metrics": {
+    "15": {
+      "MAPE_percent": 5.221519944679677,
+      "MAE": 2.2536716250419366,
+      "RMSE": 4.074758650073223
+    },
+    "30": {
+      "MAPE_percent": 7.384232718084895,
+      "MAE": 3.0953694725386227,
+      "RMSE": 5.799053122170272
+    },
+    "45": {
+      "MAPE_percent": 8.891609543497946,
+      "MAE": 3.7103313676784664,
+      "RMSE": 6.983877093626898
+    }
+  }
+}

@@ -1,0 +1,51 @@
+STGCN Three-Seed Reproduction Summary
+==========================================================
+
+Configuration:
+  official PeMSD7(M) adjacency matrix
+  original TensorFlow STGCN scaled Laplacian
+  paper-aligned PyTorch architecture
+  original validation-trigger selection protocol
+
+Selected checkpoints:
+  seed 42: epoch 50
+  seed 123: epoch 49
+  seed 2026: epoch 48
+
+Mean ± sample standard deviation:
+
+15-minute horizon
+  MAPE: 5.237370% ± 0.019284%
+  MAE:  2.242511 ± 0.013670
+  RMSE: 4.063907 ± 0.013642
+
+30-minute horizon
+  MAPE: 7.391795% ± 0.069234%
+  MAE:  3.051811 ± 0.048328
+  RMSE: 5.743005 ± 0.062231
+
+45-minute horizon
+  MAPE: 8.896150% ± 0.074503%
+  MAE:  3.634218 ± 0.077921
+  RMSE: 6.855537 ± 0.119650
+
+Mean result versus paper:
+
+15-minute horizon
+  MAPE difference: -0.022630 percentage points
+  MAE difference: -0.007489
+  RMSE difference: +0.023907
+
+30-minute horizon
+  MAPE difference: +0.061795 percentage points
+  MAE difference: +0.021811
+  RMSE difference: +0.043005
+
+45-minute horizon
+  MAPE difference: +0.206150 percentage points
+  MAE difference: +0.064218
+  RMSE difference: +0.085537
+
+Interpretation:
+The standard deviation increases with the forecast horizon, which is consistent with autoregressive error accumulation.
+Three seeds provide a first stability check, but they are still a small sample and should not be treated as a complete statistical study.

@@ -1,0 +1,10 @@
+seed,selected_epoch,horizon_steps,minutes,MAPE_percent,MAE,RMSE,metrics_path
+42,50,3,15,5.2317500457803625,2.227263814562058,4.04859167967504,results\official_original_gso_50epochs\final_metrics.csv
+123,49,3,15,5.258838941239974,2.2465964150260214,4.0683697690545255,results\official_original_gso_seed123_protocol\selection_protocol\selected_checkpoint_epoch_049_metrics.csv
+2026,48,3,15,5.221519944679677,2.2536716250419366,4.074758650073223,results\official_original_gso_seed2026_protocol\selection_protocol\selected_checkpoint_epoch_048_metrics.csv
+42,50,6,30,7.326653134170456,2.999823258553041,5.676036678538367,results\official_original_gso_50epochs\final_metrics.csv
+123,49,6,30,7.464499687080953,3.0602408777453194,5.753923953824184,results\official_original_gso_seed123_protocol\selection_protocol\selected_checkpoint_epoch_049_metrics.csv
+2026,48,6,30,7.384232718084895,3.0953694725386227,5.799053122170272,results\official_original_gso_seed2026_protocol\selection_protocol\selected_checkpoint_epoch_048_metrics.csv
+42,50,9,45,8.824020969084215,3.554606778248969,6.747063419206045,results\official_original_gso_50epochs\final_metrics.csv
+123,49,9,45,8.972818594885359,3.637717047983765,6.835671875801049,results\official_original_gso_seed123_protocol\selection_protocol\selected_checkpoint_epoch_049_metrics.csv
+2026,48,9,45,8.891609543497946,3.7103313676784655,6.983877093626898,results\official_original_gso_seed2026_protocol\selection_protocol\selected_checkpoint_epoch_048_metrics.csv

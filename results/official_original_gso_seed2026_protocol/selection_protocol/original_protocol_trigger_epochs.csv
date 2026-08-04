@@ -1,0 +1,25 @@
+epoch,improved_metric_count,improved_metrics,checkpoint_exists
+1,9,15_min_MAPE; 15_min_MAE; 15_min_RMSE; 30_min_MAPE; 30_min_MAE; 30_min_RMSE; 45_min_MAPE; 45_min_MAE; 45_min_RMSE,True
+2,9,15_min_MAPE; 15_min_MAE; 15_min_RMSE; 30_min_MAPE; 30_min_MAE; 30_min_RMSE; 45_min_MAPE; 45_min_MAE; 45_min_RMSE,True
+3,9,15_min_MAPE; 15_min_MAE; 15_min_RMSE; 30_min_MAPE; 30_min_MAE; 30_min_RMSE; 45_min_MAPE; 45_min_MAE; 45_min_RMSE,True
+4,6,15_min_MAPE; 15_min_MAE; 15_min_RMSE; 30_min_MAPE; 30_min_MAE; 30_min_RMSE,True
+6,9,15_min_MAPE; 15_min_MAE; 15_min_RMSE; 30_min_MAPE; 30_min_MAE; 30_min_RMSE; 45_min_MAPE; 45_min_MAE; 45_min_RMSE,True
+7,7,15_min_MAPE; 15_min_MAE; 15_min_RMSE; 30_min_MAE; 30_min_RMSE; 45_min_MAE; 45_min_RMSE,True
+9,3,15_min_MAE; 30_min_MAE; 45_min_MAE,True
+10,3,15_min_RMSE; 45_min_MAE; 45_min_RMSE,True
+11,9,15_min_MAPE; 15_min_MAE; 15_min_RMSE; 30_min_MAPE; 30_min_MAE; 30_min_RMSE; 45_min_MAPE; 45_min_MAE; 45_min_RMSE,True
+15,6,15_min_MAE; 15_min_RMSE; 30_min_MAE; 30_min_RMSE; 45_min_MAE; 45_min_RMSE,True
+16,4,15_min_MAPE; 15_min_RMSE; 30_min_MAPE; 45_min_MAPE,True
+17,6,15_min_MAPE; 15_min_MAE; 15_min_RMSE; 30_min_MAPE; 30_min_MAE; 45_min_MAPE,True
+18,7,15_min_MAE; 15_min_RMSE; 30_min_MAE; 30_min_RMSE; 45_min_MAPE; 45_min_MAE; 45_min_RMSE,True
+20,5,15_min_MAE; 15_min_RMSE; 30_min_MAPE; 30_min_RMSE; 45_min_MAPE,True
+21,1,15_min_MAPE,True
+22,4,15_min_MAE; 30_min_MAE; 45_min_MAE; 45_min_RMSE,True
+25,4,15_min_MAPE; 15_min_MAE; 30_min_RMSE; 45_min_RMSE,True
+26,9,15_min_MAPE; 15_min_MAE; 15_min_RMSE; 30_min_MAPE; 30_min_MAE; 30_min_RMSE; 45_min_MAPE; 45_min_MAE; 45_min_RMSE,True
+31,3,15_min_MAPE; 30_min_MAPE; 45_min_MAPE,True
+33,1,45_min_MAPE,True
+36,3,15_min_MAPE; 30_min_MAPE; 45_min_MAPE,True
+45,3,15_min_MAE; 30_min_MAE; 45_min_MAE,True
+47,1,45_min_MAPE,True
+48,2,30_min_MAPE; 45_min_MAPE,True

@@ -1,0 +1,17 @@
+{
+  "dataset": "pemsd7-m",
+  "graph_source": "official",
+  "gso_source": "original",
+  "n_his": 12,
+  "n_pred": 9,
+  "Kt": 3,
+  "Ks": 3,
+  "batch_size": 50,
+  "epochs": 50,
+  "lr": 0.001,
+  "lr_step_size": 5,
+  "lr_gamma": 0.7,
+  "checkpoint_every": 1,
+  "seed": 2026,
+  "run_name": "official_original_gso_seed2026_protocol"
+}
