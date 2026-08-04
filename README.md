@@ -80,9 +80,15 @@ STGCN-reproduction/
 |   `-- exploratory/        # Historical one-off diagnostics
 |-- results/                # Tracked metrics and selected figures
 |-- docs/                   # Methodology and gap analysis
-|-- paper_main.py           # Training and recursive evaluation entry point
+|-- baseline/
+|   `-- main.py             # Original third-party PyTorch entry point
+|-- paper_main.py           # Audited reproduction entry point
 `-- README.md
 ```
+
+The audited reproduction entry point is `paper_main.py`. The original
+third-party PyTorch training entry point is retained as `baseline/main.py` for
+comparison.
 
 The files under `experiments/` retain the intermediate checks used during the
 audit without presenting them as the main public interface.
@@ -105,7 +111,7 @@ The final configuration uses the official adjacency matrix and the original
 TensorFlow GSO construction:
 
 ```powershell
-python paper_main.py --graph_source official --gso_source original --epochs 50 --checkpoint_every 10 --seed 42 --run_name official_original_gso_50epochs
+python paper_main.py --graph_source official --gso_source original --epochs 50 --checkpoint_every 10 --seed 42 --run_name official_original_gso_seed42
 python paper_main.py --graph_source official --gso_source original --epochs 50 --checkpoint_every 1 --seed 123 --run_name official_original_gso_seed123_protocol
 python paper_main.py --graph_source official --gso_source original --epochs 50 --checkpoint_every 1 --seed 2026 --run_name official_original_gso_seed2026_protocol
 ```

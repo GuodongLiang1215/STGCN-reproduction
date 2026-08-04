@@ -51,7 +51,7 @@ args = SimpleNamespace(
     droprate=0.5,
 )
 
-# 和main.py中的blocks设置保持一致
+# Keep the block settings aligned with baseline/main.py.
 blocks = [[1], [64, 16, 64], [64, 16, 64], [128, 128], [1]]
 
 model = models.STGCNChebGraphConv(args, blocks, n_vertex).to(device)

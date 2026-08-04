@@ -41,7 +41,7 @@ def get_arguments():
         "--graph_source",
         type=str,
         choices=("current", "official"),
-        default="current",
+        default="official",
         help=(
             "Choose the adjacency matrix: "
             "'current' uses adj.npz; "
@@ -53,7 +53,7 @@ def get_arguments():
         "--gso_source",
         type=str,
         choices=("current", "original"),
-        default="current",
+        default="original",
         help=(
             "Choose the GSO construction: "
             "'current' uses the modern PyTorch "
@@ -86,7 +86,9 @@ def get_arguments():
 
     parser.add_argument("--seed", type=int, default=42)
 
-    parser.add_argument("--run_name", type=str, default="paper_50epochs")
+    parser.add_argument(
+        "--run_name", type=str, default="official_original_gso_seed42"
+    )
 
     return parser.parse_args()
 
