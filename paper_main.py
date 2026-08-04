@@ -10,14 +10,15 @@ from pathlib import Path
 import torch
 
 import numpy as np
+import scipy.sparse as sp
 
 from model.paper_model import PaperSTGCN
 from script import dataloader, utility
 
-
 # =========================================================
 # 1. 随机种子
 # =========================================================
+
 
 def set_random_seed(seed):
     """
@@ -39,15 +40,45 @@ def set_random_seed(seed):
 # 2. 命令行参数
 # =========================================================
 
+
 def get_arguments():
-    parser = argparse.ArgumentParser(
-        description="Paper-aligned STGCN reproduction"
-    )
+    parser = argparse.ArgumentParser(description="Paper-aligned STGCN reproduction")
 
     parser.add_argument(
         "--dataset",
         type=str,
         default="pemsd7-m",
+    )
+
+    parser.add_argument(
+        "--graph_source",
+        type=str,
+        choices=(
+            "current",
+            "official",
+        ),
+        default="current",
+        help=(
+            "Choose the adjacency matrix: "
+            "'current' uses adj.npz; "
+            "'official' uses adj_official_stgcn.npz."
+        ),
+    )
+
+    parser.add_argument(
+        "--gso_source",
+        type=str,
+        choices=(
+            "current",
+            "original",
+        ),
+        default="current",
+        help=(
+            "Choose the GSO construction: "
+            "'current' uses the modern PyTorch "
+            "utility; 'original' uses the "
+            "TensorFlow STGCN scaled Laplacian."
+        ),
     )
 
     parser.add_argument(
@@ -130,38 +161,231 @@ def get_arguments():
 # 3. 构建图算子
 # =========================================================
 
-def prepare_graph(dataset, device):
+
+def prepare_graph(
+    dataset,
+    graph_source,
+    device,
+    gso_source="current",
+):
     """
-    加载邻接矩阵并构造 Chebyshev 图卷积使用的 GSO。
+    根据 graph_source 选择邻接矩阵，并根据 gso_source
+    构造图卷积使用的缩放图算子（GSO）。
+
+    graph_source="current":
+        data/<dataset>/adj.npz
+
+    graph_source="official":
+        data/<dataset>/adj_official_stgcn.npz
+
+    gso_source="current":
+        使用当前 PyTorch 工具中的归一化 Laplacian
+        与 Chebyshev 缩放方法。
+
+    gso_source="original":
+        使用原始 TensorFlow STGCN 的
+        scaled_laplacian() 构造方法。
     """
 
-    adj, n_vertex = dataloader.load_adj(
-        dataset
+    dataset_directory = Path("data") / dataset
+
+    # -----------------------------------------------------
+    # 1. 选择邻接矩阵
+    # -----------------------------------------------------
+
+    if graph_source == "current":
+        graph_path = dataset_directory / "adj.npz"
+
+        adj, n_vertex = dataloader.load_adj(
+            dataset
+        )
+
+    elif graph_source == "official":
+        if dataset != "pemsd7-m":
+            raise ValueError(
+                "The official graph option is "
+                "currently available only for "
+                "pemsd7-m."
+            )
+
+        graph_path = (
+            dataset_directory
+            / "adj_official_stgcn.npz"
+        )
+
+        if not graph_path.exists():
+            raise FileNotFoundError(
+                "Official STGCN adjacency matrix "
+                "was not found:\n"
+                f"{graph_path}\n\n"
+                "Run "
+                "18_prepare_official_adjacency.py "
+                "first."
+            )
+
+        adj = sp.load_npz(
+            graph_path
+        ).tocsc()
+
+        n_vertex = adj.shape[0]
+
+    else:
+        raise ValueError(
+            f"Unsupported graph source: "
+            f"{graph_source}"
+        )
+
+    if adj.shape[0] != adj.shape[1]:
+        raise ValueError(
+            "The adjacency matrix must be square. "
+            f"Current shape: {adj.shape}"
+        )
+
+    if adj.shape[0] != n_vertex:
+        raise ValueError(
+            "The number of graph nodes does not "
+            "match the adjacency matrix shape."
+        )
+
+    # -----------------------------------------------------
+    # 2. 检查孤立节点
+    # -----------------------------------------------------
+
+    degree = np.asarray(
+        adj.sum(axis=1)
+    ).reshape(-1)
+
+    isolated_node_indices = (
+        np.flatnonzero(
+            degree == 0
+        ).tolist()
     )
 
-    gso_sparse = utility.calc_gso(
-        adj,
-        "sym_norm_lap",
-    )
+    # -----------------------------------------------------
+    # 3. 构造 GSO
+    # -----------------------------------------------------
 
-    gso_sparse = utility.calc_chebynet_gso(
-        gso_sparse
-    )
+    if gso_source == "current":
+        gso_sparse = utility.calc_gso(
+            adj,
+            "sym_norm_lap",
+        )
 
-    gso = gso_sparse.toarray().astype(
-        np.float32
-    )
+        gso_sparse = (
+            utility.calc_chebynet_gso(
+                gso_sparse
+            )
+        )
+
+        lambda_max = None
+
+    elif gso_source == "original":
+        if graph_source != "official":
+            raise ValueError(
+                "gso_source='original' must be "
+                "used with graph_source='official'."
+            )
+
+        if not hasattr(
+            utility,
+            "calc_original_stgcn_gso",
+        ):
+            raise AttributeError(
+                "script.utility does not contain "
+                "calc_original_stgcn_gso(). "
+                "Please add the original STGCN "
+                "scaled-Laplacian implementation "
+                "to script/utility.py first."
+            )
+
+        (
+            gso_sparse,
+            lambda_max,
+        ) = utility.calc_original_stgcn_gso(
+            adj
+        )
+
+    else:
+        raise ValueError(
+            f"Unsupported GSO source: "
+            f"{gso_source}"
+        )
+
+    # -----------------------------------------------------
+    # 4. 转换为 PyTorch 张量
+    # -----------------------------------------------------
+
+    if sp.issparse(gso_sparse):
+        gso_array = (
+            gso_sparse
+            .toarray()
+            .astype(np.float32)
+        )
+    else:
+        gso_array = np.asarray(
+            gso_sparse,
+            dtype=np.float32,
+        )
+
+    if not np.isfinite(
+        gso_array
+    ).all():
+        raise ValueError(
+            "The generated GSO contains NaN "
+            "or infinite values."
+        )
 
     gso = torch.from_numpy(
-        gso
+        gso_array
     ).to(device)
 
-    return gso, n_vertex
+    # -----------------------------------------------------
+    # 5. 保存图信息
+    # -----------------------------------------------------
+
+    graph_info = {
+        "source": graph_source,
+        "path": str(graph_path),
+        "shape": tuple(adj.shape),
+        "nonzero_count": int(
+            adj.nnz
+        ),
+        "diagonal_nonzero_count": int(
+            np.count_nonzero(
+                adj.diagonal()
+            )
+        ),
+        "gso_source": gso_source,
+        "isolated_node_count": len(
+            isolated_node_indices
+        ),
+        "isolated_node_indices":
+            isolated_node_indices,
+        "lambda_max": lambda_max,
+        "gso_minimum": float(
+            gso_array.min()
+        ),
+        "gso_maximum": float(
+            gso_array.max()
+        ),
+        "gso_finite": bool(
+            np.isfinite(
+                gso_array
+            ).all()
+        ),
+    }
+
+    return (
+        gso,
+        n_vertex,
+        graph_info,
+    )
 
 
 # =========================================================
 # 4. 论文式 L2 Loss
 # =========================================================
+
 
 def paper_l2_loss(prediction, target):
     """
@@ -172,14 +396,13 @@ def paper_l2_loss(prediction, target):
     注意：这里不是平均 MSE。
     """
 
-    return 0.5 * torch.sum(
-        (prediction - target) ** 2
-    )
+    return 0.5 * torch.sum((prediction - target) ** 2)
 
 
 # =========================================================
 # 5. 生成随机训练 batch
 # =========================================================
+
 
 def shuffled_batches(
     x,
@@ -221,6 +444,7 @@ def shuffled_batches(
 # =========================================================
 # 6. 递归多步评估
 # =========================================================
+
 
 @torch.no_grad()
 def evaluate_autoregressive(
@@ -288,17 +512,13 @@ def evaluate_autoregressive(
             # [batch, channel, time, node]
             model_input = history.unsqueeze(1)
 
-            prediction = model(
-                model_input
-            ).view(
+            prediction = model(model_input).view(
                 len(sequence_batch),
                 -1,
             )
 
             if step in horizons:
-                target_index = (
-                    n_his + step - 1
-                )
+                target_index = n_his + step - 1
 
                 target = sequence_batch[
                     :,
@@ -308,42 +528,22 @@ def evaluate_autoregressive(
                 ]
 
                 # 从标准化空间恢复到真实交通速度
-                prediction_original = (
-                    prediction * scaler.std
-                    + scaler.mean
-                )
+                prediction_original = prediction * scaler.std + scaler.mean
 
-                target_original = (
-                    target * scaler.std
-                    + scaler.mean
-                )
+                target_original = target * scaler.std + scaler.mean
 
-                difference = torch.abs(
-                    prediction_original
-                    - target_original
-                )
+                difference = torch.abs(prediction_original - target_original)
 
-                metric_sums[step][
-                    "absolute_error"
-                ] += difference.sum().item()
+                metric_sums[step]["absolute_error"] += difference.sum().item()
 
-                metric_sums[step][
-                    "squared_error"
-                ] += (
-                    difference ** 2
-                ).sum().item()
+                metric_sums[step]["squared_error"] += (difference**2).sum().item()
 
                 # 与原作者公式保持一致
-                metric_sums[step][
-                    "percentage_error"
-                ] += (
-                    difference
-                    / (target_original + 1e-5)
-                ).sum().item()
+                metric_sums[step]["percentage_error"] += (
+                    (difference / (target_original + 1e-5)).sum().item()
+                )
 
-                metric_sums[step][
-                    "count"
-                ] += difference.numel()
+                metric_sums[step]["count"] += difference.numel()
 
             # 把预测结果放入历史窗口末尾
             history = torch.cat(
@@ -357,30 +557,13 @@ def evaluate_autoregressive(
     metrics = {}
 
     for horizon in horizons:
-        count = metric_sums[horizon][
-            "count"
-        ]
+        count = metric_sums[horizon]["count"]
 
-        mae = (
-            metric_sums[horizon][
-                "absolute_error"
-            ]
-            / count
-        )
+        mae = metric_sums[horizon]["absolute_error"] / count
 
-        rmse = np.sqrt(
-            metric_sums[horizon][
-                "squared_error"
-            ]
-            / count
-        )
+        rmse = np.sqrt(metric_sums[horizon]["squared_error"] / count)
 
-        mape = (
-            metric_sums[horizon][
-                "percentage_error"
-            ]
-            / count
-        )
+        mape = metric_sums[horizon]["percentage_error"] / count
 
         metrics[horizon] = {
             "MAPE": float(mape),
@@ -394,6 +577,7 @@ def evaluate_autoregressive(
 # =========================================================
 # 7. 打印递归指标
 # =========================================================
+
 
 def print_metrics(
     title,
@@ -417,6 +601,7 @@ def print_metrics(
 # 8. 保存 checkpoint
 # =========================================================
 
+
 def save_checkpoint(
     path,
     epoch,
@@ -428,12 +613,9 @@ def save_checkpoint(
 ):
     checkpoint = {
         "epoch": epoch,
-        "model_state_dict":
-            model.state_dict(),
-        "optimizer_state_dict":
-            optimizer.state_dict(),
-        "scheduler_state_dict":
-            scheduler.state_dict(),
+        "model_state_dict": model.state_dict(),
+        "optimizer_state_dict": optimizer.state_dict(),
+        "scheduler_state_dict": scheduler.state_dict(),
         "scaler_mean": scaler.mean,
         "scaler_std": scaler.std,
         "arguments": vars(args),
@@ -444,14 +626,13 @@ def save_checkpoint(
         path,
     )
 
-    print(
-        f"Checkpoint saved: {path}"
-    )
+    print(f"Checkpoint saved: {path}")
 
 
 # =========================================================
 # 9. 保存训练历史
 # =========================================================
+
 
 def save_history(
     history,
@@ -460,9 +641,7 @@ def save_history(
     if not history:
         return
 
-    fieldnames = list(
-        history[0].keys()
-    )
+    fieldnames = list(history[0].keys())
 
     with output_path.open(
         "w",
@@ -482,6 +661,7 @@ def save_history(
 # 10. 保存最终指标
 # =========================================================
 
+
 def save_final_metrics(
     metrics,
     output_path,
@@ -493,13 +673,9 @@ def save_final_metrics(
             {
                 "horizon_steps": horizon,
                 "minutes": horizon * 5,
-                "MAPE_percent":
-                    metrics[horizon]["MAPE"]
-                    * 100,
-                "MAE":
-                    metrics[horizon]["MAE"],
-                "RMSE":
-                    metrics[horizon]["RMSE"],
+                "MAPE_percent": metrics[horizon]["MAPE"] * 100,
+                "MAE": metrics[horizon]["MAE"],
+                "RMSE": metrics[horizon]["RMSE"],
             }
         )
 
@@ -510,9 +686,7 @@ def save_final_metrics(
     ) as file:
         writer = csv.DictWriter(
             file,
-            fieldnames=list(
-                rows[0].keys()
-            ),
+            fieldnames=list(rows[0].keys()),
         )
 
         writer.writeheader()
@@ -522,6 +696,7 @@ def save_final_metrics(
 # =========================================================
 # 11. 主程序
 # =========================================================
+
 
 def main():
     warnings.filterwarnings(
@@ -537,21 +712,11 @@ def main():
     args = get_arguments()
     set_random_seed(args.seed)
 
-    device = torch.device(
-        "cuda"
-        if torch.cuda.is_available()
-        else "cpu"
-    )
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    checkpoint_directory = (
-        Path("checkpoints")
-        / args.run_name
-    )
+    checkpoint_directory = Path("checkpoints") / args.run_name
 
-    result_directory = (
-        Path("results")
-        / args.run_name
-    )
+    result_directory = Path("results") / args.run_name
 
     checkpoint_directory.mkdir(
         parents=True,
@@ -563,10 +728,7 @@ def main():
         exist_ok=True,
     )
 
-    config_path = (
-        result_directory
-        / "config.json"
-    )
+    config_path = result_directory / "config.json"
 
     with config_path.open(
         "w",
@@ -593,10 +755,62 @@ def main():
     # 图结构
     # -----------------------------------------------------
 
-    gso, n_vertex = prepare_graph(
-        args.dataset,
-        device,
+    (
+        gso,
+        n_vertex,
+        graph_info,
+    ) = prepare_graph(
+        dataset=args.dataset,
+        graph_source=args.graph_source,
+        device=device,
+        gso_source=args.gso_source,
     )
+
+    print("\nGraph:")
+    print(
+        "Graph source:",
+        graph_info["source"],
+    )
+    print(
+        "Graph path:",
+        graph_info["path"],
+    )
+    print(
+        "Graph shape:",
+        graph_info["shape"],
+    )
+    print(
+        "Adjacency non-zero values:",
+        graph_info["nonzero_count"],
+    )
+    print(
+        "Adjacency non-zero diagonal values:",
+        graph_info["diagonal_nonzero_count"],
+    )
+    print(
+        "GSO source:",
+        graph_info["gso_source"],
+    )
+
+    print(
+        "Isolated-node count:",
+        graph_info[
+            "isolated_node_count"
+        ],
+    )
+
+    print(
+        "Isolated-node indices:",
+        graph_info[
+            "isolated_node_indices"
+        ],
+    )
+
+    if graph_info["lambda_max"] is not None:
+        print(
+            "Largest Laplacian eigenvalue:",
+            graph_info["lambda_max"],
+        )
 
     # -----------------------------------------------------
     # 数据
@@ -625,13 +839,9 @@ def main():
     print("Validation:", val_sequences.shape)
     print("Test:", test_sequences.shape)
 
-    print(
-        f"Global mean: {scaler.mean:.6f}"
-    )
+    print(f"Global mean: {scaler.mean:.6f}")
 
-    print(
-        f"Global std:  {scaler.std:.6f}"
-    )
+    print(f"Global std:  {scaler.std:.6f}")
 
     # -----------------------------------------------------
     # 模型
@@ -662,10 +872,7 @@ def main():
         gamma=args.lr_gamma,
     )
 
-    parameter_count = sum(
-        parameter.numel()
-        for parameter in model.parameters()
-    )
+    parameter_count = sum(parameter.numel() for parameter in model.parameters())
 
     print(
         "Model parameters:",
@@ -690,9 +897,7 @@ def main():
         epoch_copy_loss_sum = 0.0
         processed_samples = 0
 
-        learning_rate_used = (
-            optimizer.param_groups[0]["lr"]
-        )
+        learning_rate_used = optimizer.param_groups[0]["lr"]
 
         for batch_number, (
             x_batch,
@@ -707,9 +912,7 @@ def main():
         ):
             optimizer.zero_grad()
 
-            prediction = model(
-                x_batch
-            ).view(
+            prediction = model(x_batch).view(
                 len(x_batch),
                 n_vertex,
             )
@@ -730,18 +933,11 @@ def main():
             optimizer.step()
 
             epoch_loss_sum += loss.item()
-            epoch_copy_loss_sum += (
-                copy_loss.item()
-            )
+            epoch_copy_loss_sum += copy_loss.item()
 
-            processed_samples += len(
-                x_batch
-            )
+            processed_samples += len(x_batch)
 
-            if (
-                batch_number == 1
-                or batch_number % 50 == 0
-            ):
+            if batch_number == 1 or batch_number % 50 == 0:
                 print(
                     f"Epoch {epoch:02d} | "
                     f"Batch {batch_number:03d} | "
@@ -753,30 +949,20 @@ def main():
         # 每轮执行递归验证
         # -------------------------------------------------
 
-        validation_metrics = (
-            evaluate_autoregressive(
-                model=model,
-                sequences=val_sequences,
-                scaler=scaler,
-                n_his=args.n_his,
-                n_pred=args.n_pred,
-                batch_size=args.batch_size,
-            )
+        validation_metrics = evaluate_autoregressive(
+            model=model,
+            sequences=val_sequences,
+            scaler=scaler,
+            n_his=args.n_his,
+            n_pred=args.n_pred,
+            batch_size=args.batch_size,
         )
 
-        epoch_seconds = (
-            time.time() - epoch_start
-        )
+        epoch_seconds = time.time() - epoch_start
 
-        average_l2_per_sample = (
-            epoch_loss_sum
-            / processed_samples
-        )
+        average_l2_per_sample = epoch_loss_sum / processed_samples
 
-        average_copy_per_sample = (
-            epoch_copy_loss_sum
-            / processed_samples
-        )
+        average_copy_per_sample = epoch_copy_loss_sum / processed_samples
 
         print("\n" + "-" * 75)
 
@@ -798,71 +984,31 @@ def main():
         history.append(
             {
                 "epoch": epoch,
-                "learning_rate":
-                    learning_rate_used,
-                "train_l2_per_sample":
-                    average_l2_per_sample,
-                "copy_l2_per_sample":
-                    average_copy_per_sample,
-                "val_15_mape_percent":
-                    validation_metrics[3][
-                        "MAPE"
-                    ] * 100,
-                "val_15_mae":
-                    validation_metrics[3][
-                        "MAE"
-                    ],
-                "val_15_rmse":
-                    validation_metrics[3][
-                        "RMSE"
-                    ],
-                "val_30_mape_percent":
-                    validation_metrics[6][
-                        "MAPE"
-                    ] * 100,
-                "val_30_mae":
-                    validation_metrics[6][
-                        "MAE"
-                    ],
-                "val_30_rmse":
-                    validation_metrics[6][
-                        "RMSE"
-                    ],
-                "val_45_mape_percent":
-                    validation_metrics[9][
-                        "MAPE"
-                    ] * 100,
-                "val_45_mae":
-                    validation_metrics[9][
-                        "MAE"
-                    ],
-                "val_45_rmse":
-                    validation_metrics[9][
-                        "RMSE"
-                    ],
-                "epoch_seconds":
-                    epoch_seconds,
+                "learning_rate": learning_rate_used,
+                "train_l2_per_sample": average_l2_per_sample,
+                "copy_l2_per_sample": average_copy_per_sample,
+                "val_15_mape_percent": validation_metrics[3]["MAPE"] * 100,
+                "val_15_mae": validation_metrics[3]["MAE"],
+                "val_15_rmse": validation_metrics[3]["RMSE"],
+                "val_30_mape_percent": validation_metrics[6]["MAPE"] * 100,
+                "val_30_mae": validation_metrics[6]["MAE"],
+                "val_30_rmse": validation_metrics[6]["RMSE"],
+                "val_45_mape_percent": validation_metrics[9]["MAPE"] * 100,
+                "val_45_mae": validation_metrics[9]["MAE"],
+                "val_45_rmse": validation_metrics[9]["RMSE"],
+                "epoch_seconds": epoch_seconds,
             }
         )
 
         save_history(
             history,
-            result_directory
-            / "training_history.csv",
+            result_directory / "training_history.csv",
         )
 
         # 原作者每10轮保存一次
-        if (
-            epoch
-            % args.checkpoint_every
-            == 0
-        ):
-            checkpoint_path = (
-                checkpoint_directory
-                / (
-                    f"paper_stgcn_"
-                    f"epoch_{epoch:03d}.pt"
-                )
+        if epoch % args.checkpoint_every == 0:
+            checkpoint_path = checkpoint_directory / (
+                f"paper_stgcn_" f"epoch_{epoch:03d}.pt"
             )
 
             save_checkpoint(
@@ -882,12 +1028,8 @@ def main():
     # 确保最后一轮模型被保存
     # -----------------------------------------------------
 
-    final_checkpoint_path = (
-        checkpoint_directory
-        / (
-            f"paper_stgcn_"
-            f"epoch_{args.epochs:03d}.pt"
-        )
+    final_checkpoint_path = checkpoint_directory / (
+        f"paper_stgcn_" f"epoch_{args.epochs:03d}.pt"
     )
 
     if not final_checkpoint_path.exists():
@@ -909,15 +1051,13 @@ def main():
     print("Final autoregressive test")
     print("=" * 75)
 
-    final_test_metrics = (
-        evaluate_autoregressive(
-            model=model,
-            sequences=test_sequences,
-            scaler=scaler,
-            n_his=args.n_his,
-            n_pred=args.n_pred,
-            batch_size=args.batch_size,
-        )
+    final_test_metrics = evaluate_autoregressive(
+        model=model,
+        sequences=test_sequences,
+        scaler=scaler,
+        n_his=args.n_his,
+        n_pred=args.n_pred,
+        batch_size=args.batch_size,
     )
 
     print_metrics(
@@ -927,27 +1067,17 @@ def main():
 
     save_final_metrics(
         final_test_metrics,
-        result_directory
-        / "final_metrics.csv",
+        result_directory / "final_metrics.csv",
     )
 
     print("\nSaved files:")
     print(final_checkpoint_path)
 
-    print(
-        result_directory
-        / "training_history.csv"
-    )
+    print(result_directory / "training_history.csv")
 
-    print(
-        result_directory
-        / "final_metrics.csv"
-    )
+    print(result_directory / "final_metrics.csv")
 
-    print(
-        result_directory
-        / "config.json"
-    )
+    print(result_directory / "config.json")
 
 
 if __name__ == "__main__":

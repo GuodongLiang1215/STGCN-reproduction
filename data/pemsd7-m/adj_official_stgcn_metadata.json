@@ -1,0 +1,52 @@
+{
+  "source_distance_file": "D:\\spatiotemporal-ml\\STGCN_reproduction\\data\\pemsd7-official\\PeMSD7_W_228.csv",
+  "source_distance_sha256": "c558c602b7937fb3ecb3835938fe8f61a34efa4c51e0ae3f61ed93ecc680060e",
+  "output_adjacency_file": "D:\\spatiotemporal-ml\\STGCN_reproduction\\data\\pemsd7-m\\adj_official_stgcn.npz",
+  "output_adjacency_sha256": "4053f3af2cde829fa1940633a3977a7983da8dfb3c0d6fa3c6ca4e96ed57664e",
+  "construction": {
+    "distance_divisor": 10000.0,
+    "sigma2": 0.1,
+    "epsilon": 0.5,
+    "diagonal_removed": true
+  },
+  "save_reload_max_abs_difference": 2.978782154272608e-08,
+  "official_adjacency_summary": {
+    "name": "official_stgcn_adjacency",
+    "shape": [
+      228,
+      228
+    ],
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "mean": 0.025166311516564382,
+    "nonzero_count": 1664,
+    "density": 0.03200984918436442,
+    "diagonal_nonzero_count": 0,
+    "diagonal_max_abs": 0.0,
+    "symmetry_max_abs_difference": 0.0
+  },
+  "current_adjacency_file": "D:\\spatiotemporal-ml\\STGCN_reproduction\\data\\pemsd7-m\\adj.npz",
+  "current_adjacency_sha256": "66382967506019a66cb15b03851981514786750881d92f5b00531b848cbaf4af",
+  "current_adjacency_summary": {
+    "name": "current_adj",
+    "shape": [
+      228,
+      228
+    ],
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "mean": 0.16676551039318513,
+    "nonzero_count": 19118,
+    "density": 0.3677670052323792,
+    "diagonal_nonzero_count": 228,
+    "diagonal_max_abs": 1.0,
+    "symmetry_max_abs_difference": 0.0
+  },
+  "current_vs_official": {
+    "max_abs_difference": 1.0,
+    "mean_abs_difference": 0.14159919887662073,
+    "rmse_difference": 0.2764373946536394,
+    "exact_equal": false,
+    "allclose_atol_1e-6": false
+  }
+}
